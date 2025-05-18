@@ -34,7 +34,7 @@
     <h1 class="text-2xl font-bold">Checklist Templates</h1>
     <a 
       href="/checklists/new" 
-      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark"
     >
       Create New Template
     </a>

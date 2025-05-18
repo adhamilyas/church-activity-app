@@ -37,7 +37,7 @@
     <h1 class="text-2xl font-bold">Users</h1>
     <a 
       href="/register" 
-      class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark"
     >
       Add New User
     </a>

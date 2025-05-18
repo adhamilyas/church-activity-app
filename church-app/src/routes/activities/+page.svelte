@@ -27,11 +27,11 @@
 
 <div>
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">Youth Activities</h1>
+    <h1 class="text-2xl font-bold text-primary">Youth Activities</h1>
     {#if $user && ($user.role === 'admin' || $user.role === 'leader')}
       <a 
         href="/activities/new" 
-        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark"
       >
         Create New Activity
       </a>
@@ -47,11 +47,11 @@
       {error}
     </div>
   {:else if activities.length === 0}
-    <div class="text-center py-10 bg-gray-50 rounded-lg">
+    <div class="text-center py-10 bg-background rounded-lg">
       <p class="text-gray-500">No activities found</p>
       {#if $user && ($user.role === 'admin' || $user.role === 'leader')}
         <p class="mt-2">
-          <a href="/activities/new" class="text-blue-600 hover:underline">Create your first activity</a>
+          <a href="/activities/new" class="text-primary hover:underline">Create your first activity</a>
         </p>
       {/if}
     </div>
@@ -60,9 +60,9 @@
       {#each activities as activity}
         <a 
           href="/activities/{activity.id}" 
-          class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50"
+          class="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-background"
         >
-          <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900">
+          <h5 class="mb-2 text-xl font-bold tracking-tight text-primary">
             {activity.title}
           </h5>
           <p class="font-normal text-gray-700 mb-3">

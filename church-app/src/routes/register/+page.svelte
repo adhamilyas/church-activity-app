@@ -53,7 +53,7 @@
 </script>
 
 <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-  <h1 class="text-2xl font-bold text-center mb-6">Register</h1>
+  <h1 class="text-2xl font-bold text-center text-primary mb-6">Register</h1>
   
   {#if error}
     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -69,7 +69,7 @@
         id="username"
         bind:value={username}
         required
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
       />
     </div>
     
@@ -80,7 +80,7 @@
         id="fullName"
         bind:value={fullName}
         required
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
       />
     </div>
     
@@ -90,7 +90,7 @@
         type="email"
         id="email"
         bind:value={email}
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
       />
     </div>
     
@@ -101,7 +101,7 @@
         id="password"
         bind:value={password}
         required
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
       />
     </div>
     
@@ -112,7 +112,7 @@
         id="confirmPassword"
         bind:value={confirmPassword}
         required
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
       />
     </div>
     
@@ -121,7 +121,7 @@
       <select
         id="role"
         bind:value={role}
-        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary"
       >
         <option value="member">Member</option>
         <option value="leader">Leader</option>
@@ -132,13 +132,13 @@
     <button
       type="submit"
       disabled={loading}
-      class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+      class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
     >
       {loading ? 'Registering...' : 'Register'}
     </button>
   </form>
   
   <div class="mt-4 text-center text-sm text-gray-600">
-    Already have an account? <a href="/login" class="text-blue-600 hover:underline">Login</a>
+    Already have an account? <a href="/login" class="text-primary hover:underline">Login</a>
   </div>
 </div> 
