@@ -4,6 +4,6 @@
 
 /* Add custom styles below */
 body {
-  background-color: #f9fafb;
+  background-color: theme('colors.background');
   min-height: 100vh;
 } 
