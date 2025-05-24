@@ -30,7 +30,8 @@
 
 <nav class="bg-primary text-white p-4">
   <div class="container mx-auto flex justify-between items-center">
-    <div>
+    <div class="flex items-center space-x-3">
+      <img src="images/gbi-logo.png" alt="GBI Logo" class="h-12 w-12 object-contain" />
       <a href="/" class="font-bold text-xl">GBI Pondok Gede Plaza</a>
     </div>
     

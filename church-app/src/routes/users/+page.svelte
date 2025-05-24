@@ -3,12 +3,19 @@
   import { getUsers } from '$lib/api';
   import { user as currentUser } from '$lib/auth';
   import type { User } from '$lib/types';
+  import EditUserModal from '$lib/components/EditUserModal.svelte';
   
   let users: User[] = [];
   let loading = true;
   let error = '';
+  let showEditModal = false;
+  let selectedUser: User | null = null;
   
   onMount(async () => {
+    await loadUsers();
+  });
+
+  async function loadUsers() {
     try {
       users = await getUsers();
     } catch (err) {
@@ -17,7 +24,21 @@
     } finally {
       loading = false;
     }
-  });
+  }
+  
+  function handleEditClick(user: User) {
+    selectedUser = user;
+    showEditModal = true;
+  }
+
+  function handleModalClose() {
+    showEditModal = false;
+    selectedUser = null;
+  }
+
+  function handleUserUpdate() {
+    loadUsers(); // Reload the users list
+  }
   
   // Helper function to get badge color based on role
   function getRoleBadgeClass(role: string): string {
@@ -98,7 +119,12 @@
               </td>
               {#if $currentUser?.role === 'admin'}
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <a href="/users/{user.id}/edit" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                  <button 
+                    on:click={() => handleEditClick(user)}
+                    class="text-blue-600 hover:text-blue-900"
+                  >
+                    Edit
+                  </button>
                 </td>
               {/if}
             </tr>
@@ -107,4 +133,13 @@
       </table>
     </div>
   {/if}
-</div> 
+</div>
+
+{#if selectedUser && showEditModal}
+  <EditUserModal
+    user={selectedUser}
+    show={showEditModal}
+    onClose={handleModalClose}
+    onUpdate={handleUserUpdate}
+  />
+{/if} 
