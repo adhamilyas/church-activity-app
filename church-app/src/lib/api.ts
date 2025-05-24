@@ -47,6 +47,22 @@ export async function getUsers(): Promise<User[]> {
   return data || [];
 }
 
+export async function updateUser(userId: string, userData: Partial<User>): Promise<User | null> {
+  const { data, error } = await supabase
+    .from('users')
+    .update(userData)
+    .eq('id', userId)
+    .select()
+    .single();
+  
+  if (error) {
+    console.error('Error updating user:', error);
+    return null;
+  }
+  
+  return data;
+}
+
 // Activity Functions
 export async function createActivity(activityData: Omit<Activity, 'id' | 'created_at'>): Promise<Activity | null> {
   const { data, error } = await supabase
@@ -199,6 +215,54 @@ export async function getChecklistTemplateWithItems(templateId: string): Promise
   }
   
   return { ...template, items: items || [] };
+}
+
+export async function updateChecklistTemplate(
+  templateId: string,
+  data: { name: string; items: Omit<ChecklistItem, 'id' | 'created_at' | 'template_id'>[] }
+): Promise<ChecklistTemplate | null> {
+  // Update template name
+  const { data: template, error: templateError } = await supabase
+    .from('checklist_templates')
+    .update({ name: data.name })
+    .eq('id', templateId)
+    .select()
+    .single();
+
+  if (templateError || !template) {
+    console.error('Error updating template:', templateError);
+    return null;
+  }
+
+  // Delete existing items
+  const { error: deleteError } = await supabase
+    .from('checklist_items')
+    .delete()
+    .eq('template_id', templateId);
+
+  if (deleteError) {
+    console.error('Error deleting existing items:', deleteError);
+    return null;
+  }
+
+  // Insert new items
+  if (data.items.length > 0) {
+    const itemsWithTemplateId = data.items.map(item => ({
+      ...item,
+      template_id: templateId
+    }));
+
+    const { error: insertError } = await supabase
+      .from('checklist_items')
+      .insert(itemsWithTemplateId);
+
+    if (insertError) {
+      console.error('Error inserting new items:', insertError);
+      return null;
+    }
+  }
+
+  return template;
 }
 
 // Activity Checklist Functions

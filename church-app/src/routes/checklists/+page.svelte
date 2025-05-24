@@ -3,14 +3,20 @@
   import { getChecklistTemplates, getChecklistTemplateWithItems, getUsers } from '$lib/api';
   import { user } from '$lib/auth';
   import type { ChecklistTemplate, User } from '$lib/types';
+  import EditTemplateModal from '$lib/components/EditTemplateModal.svelte';
   
   let templates: ChecklistTemplate[] = [];
   let selectedTemplate: ChecklistTemplate | null = null;
   let loading = true;
   let error = '';
   let users: User[] = [];
+  let showEditModal = false;
   
   onMount(async () => {
+    await loadData();
+  });
+
+  async function loadData() {
     try {
       templates = await getChecklistTemplates();
       users = await getUsers();
@@ -20,13 +26,28 @@
     } finally {
       loading = false;
     }
-  });
+  }
   
   async function viewTemplate(templateId: string) {
     try {
       selectedTemplate = await getChecklistTemplateWithItems(templateId);
     } catch (err) {
       console.error('Error fetching template details:', err);
+    }
+  }
+
+  function handleEditClick() {
+    showEditModal = true;
+  }
+
+  function handleModalClose() {
+    showEditModal = false;
+  }
+
+  async function handleTemplateUpdate() {
+    await loadData();
+    if (selectedTemplate) {
+      await viewTemplate(selectedTemplate.id);
     }
   }
   
@@ -84,15 +105,17 @@
       {#if selectedTemplate}
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-bold">{selectedTemplate.name}</h2>
-          <a 
-            href="/checklists/{selectedTemplate.id}/edit" 
-            class="text-blue-600 hover:underline flex items-center"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-            </svg>
-            Edit
-          </a>
+          {#if $user?.role === 'admin' || $user?.role === 'leader'}
+            <button 
+              on:click={handleEditClick}
+              class="text-blue-600 hover:text-blue-800 flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+              Edit
+            </button>
+          {/if}
         </div>
         
         {#if selectedTemplate.items && selectedTemplate.items.length > 0}
@@ -137,4 +160,14 @@
       {/if}
     </div>
   </div>
-</div> 
+</div>
+
+{#if selectedTemplate && showEditModal}
+  <EditTemplateModal
+    template={selectedTemplate}
+    show={showEditModal}
+    onClose={handleModalClose}
+    onUpdate={handleTemplateUpdate}
+    {users}
+  />
+{/if} 
