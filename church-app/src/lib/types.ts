@@ -43,6 +43,8 @@ export interface ChecklistItem {
   id: string;
   template_id: string;
   description: string;
+  notes?: string;
+  pic_user_id?: string;
   order_num: number;
   created_at: string;
 }
@@ -59,6 +61,8 @@ export interface ActivityChecklistItem {
   id: string;
   activity_checklist_id: string;
   description: string;
+  notes?: string;
+  pic_user_id?: string;
   is_completed: boolean;
   completed_by?: string;
   completed_at?: string;

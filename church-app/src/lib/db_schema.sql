@@ -44,6 +44,8 @@ CREATE TABLE checklist_items (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   template_id UUID REFERENCES checklist_templates(id) ON DELETE CASCADE,
   description TEXT NOT NULL,
+  notes TEXT,
+  pic_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
   order_num INTEGER NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -61,6 +63,8 @@ CREATE TABLE activity_checklist_items (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   activity_checklist_id UUID REFERENCES activity_checklists(id) ON DELETE CASCADE,
   description TEXT NOT NULL,
+  notes TEXT,
+  pic_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
   is_completed BOOLEAN DEFAULT FALSE,
   completed_by UUID REFERENCES users(id),
   completed_at TIMESTAMP WITH TIME ZONE,

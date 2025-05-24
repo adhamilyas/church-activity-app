@@ -1,17 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getChecklistTemplates, getChecklistTemplateWithItems } from '$lib/api';
+  import { getChecklistTemplates, getChecklistTemplateWithItems, getUsers } from '$lib/api';
   import { user } from '$lib/auth';
-  import type { ChecklistTemplate } from '$lib/types';
+  import type { ChecklistTemplate, User } from '$lib/types';
   
   let templates: ChecklistTemplate[] = [];
   let selectedTemplate: ChecklistTemplate | null = null;
   let loading = true;
   let error = '';
+  let users: User[] = [];
   
   onMount(async () => {
     try {
       templates = await getChecklistTemplates();
+      users = await getUsers();
     } catch (err) {
       console.error('Error fetching templates:', err);
       error = 'Failed to load checklist templates';
@@ -26,6 +28,11 @@
     } catch (err) {
       console.error('Error fetching template details:', err);
     }
+  }
+  
+  function getUserName(userId: string): string {
+    const foundUser = users.find(u => u.id === userId);
+    return foundUser ? foundUser.full_name : 'Not assigned';
   }
 </script>
 
@@ -89,11 +96,34 @@
         </div>
         
         {#if selectedTemplate.items && selectedTemplate.items.length > 0}
-          <ul class="space-y-2 mt-4">
+          <ul class="space-y-4 mt-4">
             {#each selectedTemplate.items as item}
-              <li class="p-2 border-b border-gray-200 flex">
-                <span class="w-8 text-gray-400">{item.order_num}.</span>
-                <span>{item.description}</span>
+              <li class="p-4 border rounded-md bg-gray-50">
+                <div class="flex items-start">
+                  <span class="w-8 text-gray-400 font-medium">{item.order_num}.</span>
+                  <div class="flex-1">
+                    <p class="font-medium">{item.description}</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 mb-1">Notes:</h4>
+                        <p class="text-sm text-gray-700">{item.notes || 'No notes'}</p>
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 mb-1">Person In Charge:</h4>
+                        <p class="text-sm text-gray-700">
+                          {#if item.pic_user_id}
+                            <span class="bg-secondary-light text-primary px-2 py-1 rounded-full text-xs font-medium">
+                              {getUserName(item.pic_user_id)}
+                            </span>
+                          {:else}
+                            Not assigned
+                          {/if}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </li>
             {/each}
           </ul>

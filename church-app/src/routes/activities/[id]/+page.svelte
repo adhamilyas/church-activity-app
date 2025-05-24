@@ -122,13 +122,24 @@
   async function toggleChecklistItem(itemId: string, isCompleted: boolean) {
     if (!$user) return;
     
+    // Find the item being toggled
+    const item = activityChecklist?.items?.find(item => item.id === itemId);
+    if (!item) return;
+
+    // Allow admin/leader to toggle any item
+    // For members, only allow if they are assigned to the item
+    if ($user.role === 'member' && item.pic_user_id !== $user.id) {
+      alert('You can only check items assigned to you');
+      return;
+    }
+    
     try {
       const result = await updateChecklistItem(itemId, isCompleted, $user.id);
       
       if (result && activityChecklist?.items) {
-        // Update the item in the list
+        // Update the item in the list with all fields from the result
         activityChecklist.items = activityChecklist.items.map(item => 
-          item.id === itemId ? { ...item, is_completed: isCompleted } : item
+          item.id === itemId ? { ...item, ...result } : item
         );
       }
     } catch (err) {
@@ -155,6 +166,11 @@
   function handleStatusChange(event: Event, userId: string) {
     const target = event.target as HTMLSelectElement;
     handleAttendanceChange(userId, target.value as AttendanceStatus);
+  }
+
+  function getUserName(userId: string): string {
+    const foundUser = allUsers.find(u => u.id === userId);
+    return foundUser ? foundUser.full_name : 'Not assigned';
   }
 </script>
 
@@ -219,19 +235,52 @@
         {error.checklist}
       </div>
     {:else if activityChecklist && activityChecklist.items && activityChecklist.items.length > 0}
-      <ul class="space-y-2">
+      <ul class="space-y-3">
         {#each activityChecklist.items as item}
-          <li class="flex items-center p-2 hover:bg-gray-50 rounded">
-            <input
-              type="checkbox"
-              checked={item.is_completed}
-              on:change={(e) => handleCheckboxChange(e, item.id)}
-              class="h-5 w-5 text-blue-600 focus:ring-blue-500 rounded"
-              id={`item-${item.id}`}
-            />
-            <label for={`item-${item.id}`} class="ml-2 block text-sm text-gray-900 {item.is_completed ? 'line-through text-gray-500' : ''}">
-              {item.description}
-            </label>
+          <li class="p-3 hover:bg-gray-50 rounded-lg border">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 pt-1">
+                <input
+                  type="checkbox"
+                  checked={item.is_completed}
+                  on:change={(e) => handleCheckboxChange(e, item.id)}
+                  disabled={$user?.role === 'member' && item.pic_user_id !== $user?.id}
+                  class="h-5 w-5 text-primary focus:ring-primary rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  id={`item-${item.id}`}
+                />
+              </div>
+              <div class="ml-3 flex-1">
+                <label for={`item-${item.id}`} class="block font-medium text-gray-900 {item.is_completed ? 'line-through text-gray-500' : ''}">
+                  {item.description}
+                </label>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm">
+                  <!-- {#if item.notes} -->
+                    <div class="text-gray-600">
+                      <span class="font-medium">Notes:</span> {item.notes}
+                    </div>
+                  <!-- {/if} -->
+                  
+                  {#if item.pic_user_id}
+                    <div>
+                      <span class="font-medium text-gray-600">Person In Charge:</span>
+                      <span class="bg-secondary-light text-primary px-2 py-0.5 rounded-full text-xs font-medium ml-1">
+                        {getUserName(item.pic_user_id)}
+                      </span>
+                    </div>
+                  {/if}
+                </div>
+                
+                {#if item.is_completed && item.completed_by}
+                  <div class="text-xs text-gray-500 mt-1">
+                    Completed by {getUserName(item.completed_by)} 
+                    {#if item.completed_at}
+                      on {new Date(item.completed_at).toLocaleString()}
+                    {/if}
+                  </div>
+                {/if}
+              </div>
+            </div>
           </li>
         {/each}
       </ul>
@@ -340,7 +389,7 @@
       {/if}
       
       <!-- Add Attendance (for admin/leader) -->
-      {#if $user && ($user.role === 'admin' || $user.role === 'leader') && usersNotInAttendance.length > 0}
+      {#if /* $user && ($user.role === 'admin' || $user.role === 'leader') && */ usersNotInAttendance.length > 0}
         <div class="mt-6 pt-6 border-t border-gray-200">
           <h3 class="text-lg font-medium mb-4">Add Attendance</h3>
           

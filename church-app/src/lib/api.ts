@@ -235,6 +235,8 @@ export async function createActivityChecklist(activityId: string, templateId: st
     const activityChecklistItems = templateItems.map(item => ({
       activity_checklist_id: activityChecklist.id,
       description: item.description,
+      notes: item.notes,
+      pic_user_id: item.pic_user_id,
       is_completed: false
     }));
     
